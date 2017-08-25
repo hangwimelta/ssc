@@ -1,5 +1,7 @@
 package rewards.internal;
 
+import common.money.MonetaryAmount;
+import rewards.AccountContribution;
 import rewards.Dining;
 import rewards.RewardConfirmation;
 import rewards.RewardNetwork;
@@ -41,9 +43,8 @@ public class RewardNetworkImpl implements RewardNetwork {
 	public RewardConfirmation rewardAccountFor(Dining dining) {
         final Account account = accountRepository.findByCreditCard(dining.getCreditCardNumber());
         final Restaurant merchantNumber = restaurantRepository.findByMerchantNumber(dining.getMerchantNumber());
-
-        // TODO-01: Reward an account per the sequence diagram
-		// TODO-02: Return the corresponding reward confirmation
-		return null;
+		MonetaryAmount amount = merchantNumber.calculateBenefitFor(account, dining);
+		AccountContribution contribution = account.makeContribution(amount);
+		return rewardRepository.confirmReward(contribution,dining);
 	}
 }
